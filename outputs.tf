@@ -15,7 +15,7 @@
  */
 
 output "filter" {
-  value       = var.export_filter
+  value       = local.logsink_filter
   description = "Log export filter for logs exported by GSuite-exporter"
 }
 
