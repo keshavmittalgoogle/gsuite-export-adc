@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-locals {
-  export_filter   = var.export_filter != "" ? var.export_filter : data.external.compute_filter.result.filter
-  machine_project = var.machine_project != "" ? var.machine_project : var.project_id
-}
-
 #------#
 # Data #
 #------#
@@ -50,9 +45,10 @@ data "template_file" "gsuite_exporter" {
 resource "google_compute_instance" "gsuite_exporter_vm" {
   name                      = var.machine_name
   machine_type              = var.machine_type
-  zone                      = var.machine_zone
-  project                   = local.machine_project
+  zone                      = var.zone
+  project                   = var.project_id
   allow_stopping_for_update = true
+  labels                    = var.labels
 
   boot_disk {
     initialize_params {

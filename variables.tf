@@ -65,16 +65,16 @@ variable "gsuite_exporter_version" {
 #---------------------------#
 # VM exporter configuration #
 #---------------------------#
-variable "machine_zone" {
+variable "zone" {
   description = "The instance zone"
   type        = string
   default     = "us-central1-a"
 }
 
-variable "machine_project" {
-  description = "The instance project id. Defaults to `project_id`"
+variable "location" {
+  description = "The location for the GCS bucket."
   type        = string
-  default     = ""
+  default     = "US"
 }
 
 variable "machine_type" {
@@ -99,4 +99,10 @@ variable "machine_network" {
   description = "The instance network"
   type        = string
   default     = "default"
+}
+
+variable "labels" {
+  description = "The labels to apply to the resources"
+  type        = map(string)
+  default     = {}
 }
