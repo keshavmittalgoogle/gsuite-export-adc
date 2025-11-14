@@ -15,15 +15,10 @@
  */
 
 #------#
-# Data #
+# Locals #
 #------#
-data "external" "compute_filter" {
-  program = [
-    "python3",
-    "${path.module}/scripts/get_logsink_filter.py",
-    var.project_id,
-    join(" ", var.applications)
-  ]
+locals {
+  logsink_filter = join(" OR ", formatlist("logName:projects/%s/logs/%s", var.project_id, var.applications))
 }
 
 data "template_file" "gsuite_exporter" {
