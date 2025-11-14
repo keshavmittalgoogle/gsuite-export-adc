@@ -19,7 +19,7 @@
 #------#
 data "external" "compute_filter" {
   program = [
-    "python3",
+    "python",
     "${path.module}/scripts/get_logsink_filter.py",
     var.project_id,
     join(" ", var.applications)
