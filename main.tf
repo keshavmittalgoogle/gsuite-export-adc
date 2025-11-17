@@ -17,13 +17,8 @@
 #------#
 # Data #
 #------#
-data "external" "compute_filter" {
-  program = [
-    "python",
-    "${path.module}/scripts/get_logsink_filter.py",
-    var.project_id,
-    join(" ", var.applications)
-  ]
+locals {
+  log_sink_filter = join(" OR ", formatlist("logName:projects/%s/logs/%s", var.project_id, var.applications))
 }
 
 data "template_file" "gsuite_exporter" {
@@ -88,4 +83,26 @@ resource "google_project_iam_member" "log_viewer" {
   project = var.project_id
   role    = "roles/logging.viewer"
   member  = "serviceAccount:${var.service_account}"
+}
+
+#----------#
+# Log Sink #
+#----------#
+resource "google_pubsub_topic" "gsuite_logs" {
+  name    = "gsuite-logs"
+  project = var.project_id
+}
+
+resource "google_logging_project_sink" "gsuite_sink" {
+  name            = "gsuite-sink"
+  project         = var.project_id
+  destination     = "pubsub.googleapis.com/${google_pubsub_topic.gsuite_logs.id}"
+  filter          = local.log_sink_filter
+  unique_writer_identity = true
+}
+
+resource "google_project_iam_member" "gsuite_sink_writer" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  member  = google_logging_project_sink.gsuite_sink.writer_identity
 }
